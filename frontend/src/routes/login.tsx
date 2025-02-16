@@ -19,6 +19,7 @@ import {
   redirect,
 } from "@tanstack/react-router"
 import { type SubmitHandler, useForm } from "react-hook-form"
+import { GoogleLogin } from '@react-oauth/google'
 
 import Logo from "/assets/images/fastapi-logo.svg"
 import type { Body_login_login_access_token as AccessToken } from "../client"
@@ -59,6 +60,18 @@ function Login() {
 
     try {
       await loginMutation.mutateAsync(data)
+    } catch {
+      // error is handled by useAuth hook
+    }
+  }
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      // 發送 Google 憑證到後端進行驗證
+      await loginMutation.mutateAsync({
+        credential: credentialResponse.credential,
+        provider: 'google'
+      })
     } catch {
       // error is handled by useAuth hook
     }
@@ -132,6 +145,15 @@ function Login() {
         <Button variant="primary" type="submit" isLoading={isSubmitting}>
           Log In
         </Button>
+        <Text textAlign="center" color="gray.500">
+          或
+        </Text>
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => {
+            console.error('Google Login Failed')
+          }}
+        />
         <Text>
           Don't have an account?{" "}
           <Link as={RouterLink} to="/signup" color="blue.500">
