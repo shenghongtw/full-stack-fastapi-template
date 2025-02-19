@@ -39,7 +39,7 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const [show, setShow] = useBoolean()
-  const { loginMutation, error, resetError } = useAuth()
+  const { loginMutation, googleLoginMutation, error, resetError } = useAuth()
   const {
     register,
     handleSubmit,
@@ -67,8 +67,7 @@ function Login() {
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
-      // 發送 Google 憑證到後端進行驗證
-      await loginMutation.mutateAsync({
+      await googleLoginMutation.mutateAsync({
         credential: credentialResponse.credential,
         provider: 'google'
       })
@@ -89,14 +88,14 @@ function Login() {
         gap={4}
         centerContent
       >
-        <Image
+        {/* <Image
           src={Logo}
           alt="FastAPI logo"
           height="auto"
           maxW="2xs"
           alignSelf="center"
           mb={4}
-        />
+        /> */}
         <FormControl id="username" isInvalid={!!errors.username || !!error}>
           <Input
             id="username"
@@ -148,12 +147,20 @@ function Login() {
         <Text textAlign="center" color="gray.500">
           或
         </Text>
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => {
-            console.error('Google Login Failed')
-          }}
-        />
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ width: '100%', maxWidth: '360px' }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => {
+                console.error('Google Login Failed')
+              }}
+              size="large"
+              width="384px"
+              useOneTap={false}
+              theme="filled_blue"
+            />
+          </div>
+        </div>
         <Text>
           Don't have an account?{" "}
           <Link as={RouterLink} to="/signup" color="blue.500">

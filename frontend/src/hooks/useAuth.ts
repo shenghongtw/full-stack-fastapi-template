@@ -86,6 +86,27 @@ const useAuth = () => {
     navigate({ to: "/login" })
   }
 
+  const googleLogin = async (data: { credential: string, provider: string }) => {
+    const response = await LoginService.googleLogin({
+      requestBody: data
+    })
+    localStorage.setItem("access_token", response.access_token)
+  }
+
+  const googleLoginMutation = useMutation({
+    mutationFn: googleLogin,
+    onSuccess: () => {
+      navigate({ to: "/" })
+    },
+    onError: (err: ApiError) => {
+      let errDetail = (err.body as any)?.detail
+      if (err instanceof AxiosError) {
+        errDetail = err.message
+      }
+      setError(errDetail)
+    },
+  })
+
   return {
     signUpMutation,
     loginMutation,
@@ -94,6 +115,7 @@ const useAuth = () => {
     isLoading,
     error,
     resetError: () => setError(null),
+    googleLoginMutation,
   }
 }
 

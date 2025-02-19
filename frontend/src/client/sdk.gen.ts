@@ -270,6 +270,28 @@ export class LoginService {
       },
     })
   }
+
+  /**
+   * Google Login
+   * Google OAuth login
+   * @param data The data for the request.
+   * @param data.requestBody
+   * @returns Token Successful Response
+   * @throws ApiError
+   */
+  public static googleLogin(
+    data: { requestBody: { credential: string; provider: string } }
+  ): CancelablePromise<LoginLoginAccessTokenResponse> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/api/v1/login/google",
+      body: data.requestBody,
+      mediaType: "application/json",
+      errors: {
+        422: "Validation Error",
+      },
+    })
+  }
 }
 
 export class UsersService {

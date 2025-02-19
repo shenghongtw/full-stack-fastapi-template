@@ -10,11 +10,13 @@ class UserBase(SQLModel):
     is_active: bool = True
     is_superuser: bool = False
     full_name: str | None = Field(default=None, max_length=255)
+    phone: str | None = Field(default=None, max_length=255)
+    google_id: str | None = Field(default=None, unique=True, index=True)
 
 
 # Properties to receive via API on creation
 class UserCreate(UserBase):
-    password: str = Field(min_length=8, max_length=40)
+    pass
 
 
 class UserRegister(SQLModel):
@@ -26,7 +28,6 @@ class UserRegister(SQLModel):
 # Properties to receive via API on update, all are optional
 class UserUpdate(UserBase):
     email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
-    password: str | None = Field(default=None, min_length=8, max_length=40)
 
 
 class UserUpdateMe(SQLModel):
@@ -42,7 +43,7 @@ class UpdatePassword(SQLModel):
 # Database model, database table inferred from class name
 class User(UserBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    hashed_password: str
+    # hashed_password: str | None = None
     items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)
 
 
@@ -112,3 +113,8 @@ class TokenPayload(SQLModel):
 class NewPassword(SQLModel):
     token: str
     new_password: str = Field(min_length=8, max_length=40)
+
+
+# Google OAuth login
+class GoogleLogin(SQLModel):
+    credential: str
